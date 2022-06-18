@@ -1,172 +1,163 @@
 package proyecto;
 
-import java.io.EOFException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.RandomAccessFile;
-import java.io.Serializable;
+import java.io.BufferedWriter;
 import java.util.ArrayList;
-import javax.swing.JOptionPane;
+import java.util.LinkedList;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-public class Archivo{
-    private String nombre;
-    private String path;
-    File archivo = null;
-    private ArrayList<Campo> listaCampos = new ArrayList();
-    private ArrayList<String> listaRegistros = new ArrayList();
-    private boolean saved = false;
-    private boolean registros = false;
-    boolean llaveprimaria = false;
-    private String nombrellave;
+public class Archivo {
 
-    public Archivo(String nombre, String path) {
-        this.nombre = nombre;
-        this.path = path;
-        archivo = new File(path + ".abc");
-        try{
-            archivo.createNewFile();
-        }catch(Exception e){
-            
-        }
-        
-    }
-
-    public boolean isLlaveprimaria() {
-        return llaveprimaria;
-    }
-
-    public void setLlaveprimaria(boolean llaveprimaria) {
-        this.llaveprimaria = llaveprimaria;
-    }
-
-    public String getNombrellave() {
-        return nombrellave;
-    }
-
-    public void setNombrellave(String nombrellave) {
-        this.nombrellave = nombrellave;
-    }
+    private File file = null;
+    private String fileName;
+    private boolean saved;
+    private boolean opened;
+    boolean first;
+    private DatosRegistros data = new DatosRegistros();
     
-    
-    
-
-    public boolean isRegistros() {
-        return registros;
-    }
-
-    public void setRegistros(boolean registros) {
-        this.registros = registros;
-    }
-    
-    
+    LinkedList avaiList = new LinkedList();
+    ArrayList<Integer> auxiliaryList = new ArrayList();
 
     public Archivo() {
+    }
+
+    public Archivo(String path, String fileName) {
+        file = new File(path);
+        this.fileName = fileName;
+    }
+    
+    public String metadata(){
         
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd 'de' MMMM 'del' YYYY hh:mm:ss aa", new Locale("es"));
+        
+        String acum = "";
+        acum += "Modificado: " + dateFormat.format(new Date()) + "\n";
+        acum += "Archivo: " + this.file.getAbsolutePath() + "\n";
+        acum += "Nº de Campos:\n";
+        acum += data.getFields().size() + "\n";
+         
+        for (Campo field : data.getFields()) {
+            acum += field + "\n";
+        }
+        
+        acum += "===========================================================\n";
+        
+        return acum;
+    }
+    
+    public void createFile(String filePath, String fileName){
+        File new_file = new File(filePath);
+        this.setFile(new_file);
+        System.out.println("Archivo: " + file.getAbsolutePath());
+    }
+
+    public void writeToFile(String content){
+        System.out.println("\n" + content);
+        try {
+            FileWriter writer = new FileWriter(file.getAbsolutePath());
+            writer.write(content);
+            writer.close();
+        } catch (IOException e) {}
+    }
+    
+    public void readMetadata(){
+        try {
+            Scanner reader = null;
+            reader = new Scanner(file);
+            System.out.println(file.exists());
+            if (file.exists()) {
+                reader.useDelimiter("\n");
+                System.out.println(reader.nextLine());
+                System.out.println(reader.nextLine());
+                System.out.println(reader.nextLine());
+                int numFields = reader.nextInt();
+                System.out.println(numFields);
+                reader.useDelimiter(";");
+                reader.skip("\n");
+                for (int i = 0; i < numFields; i++) {
+                    String fieldName = reader.next();
+                    String dataType = reader.next();
+                    boolean isKey = reader.nextBoolean();
+                    int fieldSize = reader.nextInt();
+                    reader.nextLine();
+                    data.addCampo(new Campo(fieldName, dataType, isKey, fieldSize));
+                }
+                reader.close();
+            }
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Archivo.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public boolean isFirst() {
+        return first;
+    }
+
+    public void setFirst(boolean first) {
+        this.first = first;
+    }
+    public ArrayList<Integer> getAuxiliaryList() {
+        return auxiliaryList;
+    }
+
+    public void setAuxiliaryList(ArrayList<Integer> auxiliaryList) {
+        this.auxiliaryList = auxiliaryList;
+    }
+
+    public File getFile() {
+        return file;
+    }
+
+    public void setFile(File file) {
+        this.file = file;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
     public boolean isSaved() {
         return saved;
     }
 
-    public void setSaved() {
-        this.saved = true;
-    }
-    
-    
-    
-    public Archivo(String path) {
-        archivo = new File(path);
+    public void setSaved(boolean saved) {
+        this.saved = saved;
     }
 
-    public String getNombre() {
-        return nombre;
-    }
-    
-    public String getPath() {
-        return path;
+    public LinkedList getAvaiList() {
+        return avaiList;
     }
 
-    public ArrayList<Campo> getListaCampos() {
-        return listaCampos;
+    public void setAvaiList(LinkedList avaiList) {
+        this.avaiList = avaiList;
     }
     
-    public ArrayList<String> getListaRegistros() {
-        return listaRegistros;
+    public DatosRegistros getData() {
+        return data;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void setData(DatosRegistros data) {
+        this.data = data;
     }
     
-    public void setPath(String path) {
-        this.path = path;
-        archivo = new File(this.path+ ".abc");
+    public boolean isOpened() {
+        return opened;
     }
 
-    public void setListaCampos(ArrayList<Campo> listaCampos) {
-        this.listaCampos = listaCampos;
+    public void setOpened(boolean opened) {
+        this.opened = opened;
     }
-    
-    public void setListaRegistros(ArrayList<String> listaRegistros) {
-        this.listaRegistros = listaRegistros;
-    }
-    
-    public void addCampo(Campo campo) {
-        this.listaCampos.add(campo);
-    }
-    
-    public void addRegistro(String registro) {
-        this.listaRegistros.add(registro);
-    }
-    
-    public void escribirArchivo() {
-        FileOutputStream fw = null;
-        ObjectOutputStream bw = null;
-        try {
-            fw = new FileOutputStream(archivo);
-            bw = new ObjectOutputStream(fw);
-            for (Campo t : listaCampos) {
-                bw.writeObject(t);
-            }
-            bw.flush();
-        } catch (Exception ex) {
-        } finally {
-            try {
-                bw.close();
-                fw.close();
-            } catch (Exception ex) {
-            }
-        }
-    }
-    
-    public void cargarArchivo() {
-        try {            
-            listaCampos = new ArrayList();
-            Campo temp;
-            if (archivo.exists()) {
-                  FileInputStream entrada = new FileInputStream(archivo);
-                ObjectInputStream objeto = new ObjectInputStream(entrada);
-                try {
-                    while ((temp = (Campo) objeto.readObject()) != null) {
-                        listaCampos.add(temp);
-                    }
-                } catch (EOFException e) {
-                    //encontro el final del archivo
-                }
-                objeto.close();
-                entrada.close();
-            } //fin if           
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    @Override
-    public String toString() {
-        return "Archivo{" + "nombre=" + nombre + '}';
-    }
-    
 }

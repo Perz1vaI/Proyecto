@@ -1,0 +1,11 @@
+Modificado: 18 de junio del 2022 03:40:35 PM
+Archivo: C:\Users\Pedro\Documents\unitecclases\2022\II Q\Estructura de Datos II\Proyecto_Final\Proyecto\Proyecto\Files\aasd.txt
+Nº de Campos:
+6
+CAMPO;Entero;false;3;
+wedsdasd;Double;false;1;
+ff;Double;false;1;
+sa;Cadena;false;1;
+dfgsdfds;Entero;false;1;
+ccadsd;Entero;false;1;
+===========================================================

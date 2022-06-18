@@ -1,81 +1,54 @@
 package proyecto;
 
-import java.io.Serializable;
-import java.util.ArrayList;
+public class Campo {
+    
+    private String fieldName;
+    private String dataType;
+    private boolean mainKey;
+    private int fieldSize;
 
-public class Campo implements Serializable {
-
-    String tipo;
-    String nombre;
-    int longitud;
-    boolean llave_primaria;
-    ArrayList<String> registros = new ArrayList();
-    private static final long serialVersionUID = 777L;
-
-    public Campo(String nombre, String tipo, int longitud, boolean llave_primaria) {
-        this.nombre = nombre;
-        this.tipo = tipo;
-        this.longitud = longitud;
-        this.llave_primaria = llave_primaria;
+    public Campo(String fieldName, String dataType, boolean mainKey, int fieldSize) {
+        this.fieldName = fieldName;
+        this.dataType = dataType;
+        this.mainKey = mainKey;
+        this.fieldSize = fieldSize;
     }
 
-    public Campo() {
+    public String getFieldName() {
+        return fieldName;
     }
 
-    public String getTipo() {
-        return tipo;
+    public void setFieldName(String fieldName) {
+        this.fieldName = fieldName;
     }
 
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
+    public String getDataType() {
+        return dataType;
     }
 
-    public int getLongitud() {
-        return longitud;
+    public void setDataType(String dataType) {
+        this.dataType = dataType;
     }
 
-    public void setLongitud(int longitud) {
-        this.longitud = longitud;
+    public boolean isMainKey() {
+        return mainKey;
     }
 
-    public String getNombre() {
-        return nombre;
+    public void setMainKey(boolean mainKey) {
+        this.mainKey = mainKey;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public int getFieldSize() {
+        return fieldSize;
     }
 
-    public boolean isLlavePrimaria() {
-        return llave_primaria;
-    }
-
-    public boolean isLlave_primaria() {
-        return llave_primaria;
-    }
-
-    public void setLlave_primaria(boolean llave_primaria) {
-        this.llave_primaria = llave_primaria;
-    }
-
-    public ArrayList<String> getRegistros() {
-        return registros;
-    }
-
-    public String getRegistro(int i) {
-        return registros.get(i);
-    }
-
-    public void setRegistros(ArrayList<String> registros) {
-        this.registros = registros;
-    }
-
-    public void addRegistro(String registro) {
-        this.registros.add(registro);
+    public void setFieldSize(int fieldSize) {
+        this.fieldSize = fieldSize;
     }
 
     @Override
     public String toString() {
-        return nombre;
+        return fieldName+';'+dataType+';'+mainKey+';'+fieldSize+';';
     }
+    
 }
